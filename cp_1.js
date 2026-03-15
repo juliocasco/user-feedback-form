@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('feedback-form');
-  const comments = document.getElementById('comments');
+  const comments = document.getElementById('feedback');
   const charCount = document.querySelector('.char-count');
   const feedbackList = document.getElementById('feedback-list');
 
