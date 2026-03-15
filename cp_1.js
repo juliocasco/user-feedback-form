@@ -1,69 +1,71 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const form = document.getElementById('feedback-form');
-  const comments = document.getElementById('feedback');
+  const form = document.getElementById('feedback-form');          
+  const feedbackList = document.getElementById('feedback-list');   
+  const confirmation = document.getElementById('confirmation');
   const charCount = document.querySelector('.char-count');
-  const feedbackList = document.getElementById('feedback-list');
 
-  // Character counter
-  comments.addEventListener('input', () => {
-    const len = comments.value.length;
-    charCount.textContent = `${len} / 500`;
-  });
+  // Character counter (already working – keep it)
+  const textarea = document.getElementById('feedback');
+  if (textarea) {
+    textarea.addEventListener('input', () => {
+      const len = textarea.value.length;
+      if (charCount) charCount.textContent = `${len} / 500`;
+    });
+  }
 
-  // Event delegation
-  form.addEventListener('mouseover', (e) => {
-    if (e.target.closest('.form-group')) {
-      e.target.closest('.form-group').querySelector('.tooltip').style.opacity = '1';
-    }
-  });
-
-  form.addEventListener('mouseout', (e) => {
-    if (e.target.closest('.form-group')) {
-      e.target.closest('.form-group').querySelector('.tooltip').style.opacity = '0';
-    }
-  });
-
-  // Form submission
+  // Submit handler
   form.addEventListener('submit', (e) => {
-    e.preventDefault();
+    e.preventDefault();   
 
-    // Clear old errors
+    // Clear previous errors
     document.querySelectorAll('.error').forEach(el => el.textContent = '');
 
-    const name = document.getElementById('name').value.trim();
-    const email = document.getElementById('email').value.trim();
-    const comment = comments.value.trim();
+    const nameVal     = document.getElementById('name')?.value.trim()     || '';
+    const emailVal    = document.getElementById('email')?.value.trim()    || '';
+    const feedbackVal = document.getElementById('feedback')?.value.trim() || '';
 
     let isValid = true;
 
-    if (!name) {
-      document.querySelector('#name ~ .error').textContent = 'Required';
+    if (!nameVal) {
+      document.querySelector('#name ~ .error')?.append('Name is required');
       isValid = false;
     }
-    if (!email) {
-      document.querySelector('#email ~ .error').textContent = 'Required';
+    if (!emailVal) {
+      document.querySelector('#email ~ .error')?.append('Email is required');
       isValid = false;
     }
-    if (!comment) {
-      document.querySelector('#comments ~ .error').textContent = 'Required';
+    if (!feedbackVal) {
+      document.querySelector('#feedback ~ .error')?.append('Feedback is required');
       isValid = false;
     }
 
     if (isValid) {
-      const div = document.createElement('div');
-      div.className = 'item';
-      div.innerHTML = `<strong>${name}</strong> (${email})<br>${comment.replace(/\n/g, '<br>')}`;
-      feedbackList.appendChild(div);
+      // Feedback Entry
+      const entry = document.createElement('div');
+      entry.className = 'feedback-item';
+      entry.innerHTML = `
+        <strong>${nameVal}</strong> (${emailVal})<br>
+        ${feedbackVal.replace(/\n/g, '<br>')}
+        <small style="display:block; margin-top:8px; color:#777;">
+          ${new Date().toLocaleString()}
+        </small>
+      `;
 
+      if (feedbackList) {
+        feedbackList.appendChild(entry);
+      }
+
+      // Reset form
       form.reset();
-      charCount.textContent = '0 / 500';
-    }
-  });
 
-  // Show that clicks outside the form do not trigger any propagation issues
-  document.body.addEventListener('click', (e) => {
-    if (e.target.closest('.container') === null) {
-      // console.log('click outside form - no propagation issue');
+      // Update char count
+      if (charCount) charCount.textContent = '0 / 500';
+
+      // Show thank you message
+      if (confirmation) {
+        confirmation.style.display = 'block';
+        confirmation.scrollIntoView({ behavior: 'smooth' });
+      }
     }
   });
 });
